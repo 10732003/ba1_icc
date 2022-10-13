@@ -106,19 +106,18 @@ int main()
 		if (ext_ren){
 			cout << "Les renards ont été en voie d’extinction."<<endl;
 			if (nb_renards > 5){cout << "mais la population est remontée ! Ouf !" << endl;}
-			if (ren_rip){cout << "et les renards ont disparus :-("<<endl;}
+			if (ren_rip){cout << "et les renards ont disparu :-("<<endl;}
 			}
 			
 		if (ext_lap){
 			cout << "Les lapins ont été en voie d’extinction."<<endl;
 			if (nb_lapins > 5){cout << "mais la population est remontée ! Ouf !" << endl;}
-			if (lap_rip){cout << "et les lapins ont disparus :-("<<endl;}
+			if (lap_rip){cout << "et les lapins ont disparu :-("<<endl;}
 			}
 
 		if (not ext_lap and not ext_ren){cout << "Les lapins et les renards ont des populations stables." << endl;}
 		att_0 = att_0 + 0.01;
-		
-		cout << endl;
+
   } while (att_0 <= att_1);
 /*
   cout << "taux d'attaque au départ en % (entre 0.5 et 6) ? ";
