@@ -104,13 +104,13 @@ int main()
 			<< nb_renards << " renards" << endl;
 		
 		if (ext_ren){
-			cout << "Les renards ont été en voie d’extinction."<<endl;
+			cout << "Les renards ont été en voie d'extinction"<<endl;
 			if (nb_renards > 5){cout << "mais la population est remontée ! Ouf !" << endl;}
 			if (ren_rip){cout << "et les renards ont disparu :-("<<endl;}
 			}
 			
 		if (ext_lap){
-			cout << "Les lapins ont été en voie d’extinction."<<endl;
+			cout << "Les lapins ont été en voie d'extinction"<<endl;
 			if (nb_lapins > 5){cout << "mais la population est remontée ! Ouf !" << endl;}
 			if (lap_rip){cout << "et les lapins ont disparu :-("<<endl;}
 			}
