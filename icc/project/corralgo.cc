@@ -334,13 +334,14 @@ vector<Path> find_path(table &maze, Element B, list_cell &crossed_cell)
 	
 	list_cell around_b = find_neighbours(maze, B, 0, true);
 	int val = smallest_val(maze, around_b);
+	table new_maze;
 	
 	while (val >= 0)
 	{
 		resolve_path(maze, all_path, val, crossed_cell);
 		val -= 1;
 	}
-		
+	
 	return all_path;
 }
 
