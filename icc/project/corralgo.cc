@@ -3,12 +3,6 @@
 *	Author		:	Dutruy Eloi
 * 	SCIPER		:	355726
 * 	Version		:	6.2
-* 
-* 	[
-* 	Personal note : 6.0 -> works great
-* 					6.1 -> made loads of stuff more explicit
-* 					6.2 -> respect the conventions
-* 	]
 */ 
 
 #include <iostream>
@@ -50,19 +44,16 @@ typedef vector<string> list_str;
 // maze setup
 table maze_creation();
 void maze_display(table &maze);
-Element add_element(table &maze, int x, bool ask_position = true, 
-					size_t row = 0, size_t col = 0);
+Element add_element(table &maze,int elem,bool ask_pos=true,size_t row=0,size_t col=0);
 void add_obstacles(table &maze, Element A, Element B);
 void add_walls(table &maze, Element A, Element B);
 
 // path finding algo
-list_cell find_neighbours(table &maze, Element point, int value, 
-						  bool all_cell_around = false);
+list_cell find_neighbours(table &maze, Element el, int val, bool cell_around = false);
 void make_crown(table &maze, int crown_rank, list_cell last_crown);
 void path_exist(table &maze, Element B);
 vector<Path> find_path(table &maze, Element B, list_cell &crossed_cell);
-void resolve_path(table &maze, vector<Path> &all_path, 
-				  int val, list_cell &crossed_cell);
+void resolve_path(table &maze, vector<Path> &paths, int val, list_cell &crossed_cell);
 char relative_position(Element cel_now, Element next_cel);
 int smallest_val(table &maze, list_cell list);
 
@@ -70,7 +61,7 @@ int smallest_val(table &maze, list_cell list);
 void add_path(table &maze, list_cell &crossed_cell, Element A);
 void clean_maze(table &maze);
 void display_path(vector<Path> &all_path);
-list_str merge_list(list_str left, size_t size_left, list_str right, size_t size_right);
+list_str merge_list(list_str left, size_t size_l, list_str right, size_t size_r);
 list_str sort_list(list_str list_path, size_t size_list);
 bool one_before_two(string string1, string string2);
 
@@ -171,7 +162,7 @@ void maze_display(table &maze)
 		}
 }
 
-Element add_element(table &maze, int x, bool ask_position, size_t row, size_t col)
+Element add_element(table &maze, int elem, bool ask_position, size_t row, size_t col)
 {
 	if (ask_position)
 	{
@@ -198,12 +189,12 @@ Element add_element(table &maze, int x, bool ask_position, size_t row, size_t co
 	
 	Element position({row, col});
 	
-	if (maze[row][col] == PT_A and x == PT_B)
+	if (maze[row][col] == PT_A and elem == PT_B)
 	{
 		print_error(OVERLAP_AB);
 	}
 	
-	maze[row][col] = x;
+	maze[row][col] = elem;
 	
 	return position;
 }
@@ -250,30 +241,29 @@ void add_walls(table &maze, Element A, Element B)
 
 //-------------------------path finding algo---------------------------
 
-list_cell find_neighbours(table &maze, Element point, 
-						  int value, bool all_cell_around)
+list_cell find_neighbours(table &maze, Element point, int val, bool all_cell_around)
 {
 	list_cell neighbours;
 	
 	size_t row = point.row;
 	size_t col = point.col;
 	
-	if (maze[row-1][col] == value or all_cell_around) // top
+	if (maze[row-1][col] == val or all_cell_around) // top
 	{
 		neighbours.push_back({row-1, col});
 	}
 	
-	if (maze[row+1][col] == value or all_cell_around) // down
+	if (maze[row+1][col] == val or all_cell_around) // down
 	{
 		neighbours.push_back({row+1, col});
 	}
 	
-	if (maze[row][col-1] == value or all_cell_around) // left
+	if (maze[row][col-1] == val or all_cell_around) // left
 	{
 		neighbours.push_back({row, col-1});
 	}
 	
-	if (maze[row][col+1] == value or all_cell_around) // right
+	if (maze[row][col+1] == val or all_cell_around) // right
 	{
 		neighbours.push_back({row, col+1});
 	}
@@ -334,7 +324,6 @@ vector<Path> find_path(table &maze, Element B, list_cell &crossed_cell)
 	
 	list_cell around_b = find_neighbours(maze, B, 0, true);
 	int val = smallest_val(maze, around_b);
-	table new_maze;
 	
 	while (val >= 0)
 	{
@@ -345,12 +334,11 @@ vector<Path> find_path(table &maze, Element B, list_cell &crossed_cell)
 	return all_path;
 }
 
-void resolve_path(table &maze, vector<Path> &all_path, 
-				  int val, list_cell &crossed_cell)
+void resolve_path(table &maze, vector<Path> &paths, int val, list_cell &crossed_cell)
 {
-	for (size_t i(0); i < all_path.size(); ++i)
+	for (size_t i(0); i < paths.size(); ++i)
 	{
-		Path base_path = all_path[i];
+		Path base_path = paths[i];
 		Element base_cel = base_path.last_cel;
 		string base_movements = base_path.movements;
 	
@@ -366,11 +354,11 @@ void resolve_path(table &maze, vector<Path> &all_path,
 			
 			if (j == around_cel.size()-1)
 			{
-				all_path[i] = {next_cel, movements};
+				paths[i] = {next_cel, movements};
 			} 
 			else {
 				Path new_path = {next_cel, movements};
-				all_path.push_back(new_path);
+				paths.push_back(new_path);
 			}
 		}
 	}
@@ -512,13 +500,12 @@ list_str sort_list(list_str list, size_t size_list)
 	return new_list;
 }
 
-list_str merge_list(list_str left, size_t size_left, 
-						 list_str right, size_t size_right)
+list_str merge_list(list_str left, size_t size_l, list_str right, size_t size_r)
 {
 	size_t i(0), j(0);
 	list_str sorted_list{};
 	
-	while (i < size_left and j < size_right)
+	while (i < size_l and j < size_r)
 	{
 		if (one_before_two(left[i], right[j]))
 		{
@@ -532,13 +519,13 @@ list_str merge_list(list_str left, size_t size_left,
 		}
 	}
 	
-	while (i < size_left)
+	while (i < size_l)
 	{	
 		sorted_list.push_back(left[i]);	
 		++i;
 	}
 	
-	while (j < size_right)
+	while (j < size_r)
 	{	
 		sorted_list.push_back(right[j]);
 		++j;
